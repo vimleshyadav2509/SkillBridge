@@ -6,10 +6,11 @@ def normalize_text(text: str) -> str:
     """
     Normalize text for reliable skill matching.
 
-    Examples:
+    Handles:
     REST API  -> rest api
     REST APIs -> rest api
-    rest-api  -> rest api
+    RESTful API -> rest api
+    rest-api -> rest api
     """
 
     if not text:
@@ -17,16 +18,16 @@ def normalize_text(text: str) -> str:
 
     text = text.lower()
 
-    # Normalize common plural forms
+    # Normalize plural forms
     text = re.sub(r"\bapis\b", "api", text)
 
     # Normalize RESTful API variations
     text = re.sub(r"\brestful\s+apis?\b", "rest api", text)
 
-    # Replace hyphens/slashes with spaces
+    # Replace hyphens and slashes with spaces
     text = re.sub(r"[-/]", " ", text)
 
-    # Keep letters, numbers, +, # and spaces
+    # Keep letters, numbers, +, #, dots and spaces
     text = re.sub(r"[^a-z0-9+#.\s]", " ", text)
 
     # Remove extra spaces
@@ -39,6 +40,10 @@ def skill_exists(skill: str, text: str) -> bool:
     """
     Check whether a skill exists as a complete phrase.
     Prevents incorrect partial matches.
+
+    Example:
+    C should NOT match C++
+    Java should NOT match JavaScript
     """
 
     skill_normalized = normalize_text(skill)
@@ -47,72 +52,38 @@ def skill_exists(skill: str, text: str) -> bool:
     if not skill_normalized or not text_normalized:
         return False
 
-    # Escape skill so special characters such as C++ work correctly
     pattern = r"(?<!\w)" + re.escape(skill_normalized) + r"(?!\w)"
 
     return re.search(pattern, text_normalized) is not None
 
 
-def match_job_description(resume_text: str, job_description: str):
+def calculate_job_match_score(keyword_percentage: int) -> int:
     """
-    Compare resume skills with skills mentioned in a job description.
+    Convert keyword matching percentage into an overall
+    job match score.
+
+    Currently the keyword match is the main measurable
+    factor. This function is separated so more scoring
+    factors can be added later without changing the API.
     """
 
-    if not resume_text:
-        return {
-            "matched_keywords": [],
-            "missing_keywords": [],
-            "keyword_match_percentage": 0,
-            "recommendations": [
-                "Resume text is empty."
-            ]
-        }
+    return max(0, min(100, keyword_percentage))
 
-    if not job_description:
-        return {
-            "matched_keywords": [],
-            "missing_keywords": [],
-            "keyword_match_percentage": 0,
-            "recommendations": [
-                "Job description is empty."
-            ]
-        }
 
-    matched_keywords = []
-    missing_keywords = []
+def generate_recommendations(
+    match_percentage: int,
+    missing_keywords: list
+) -> list:
+    """
+    Generate useful recommendations based on job matching.
+    """
 
-    # Check every known skill
-    for skill in SKILLS:
-
-        # Is this skill required by the job?
-        if skill_exists(skill, job_description):
-
-            # Does the resume contain this skill?
-            if skill_exists(skill, resume_text):
-                matched_keywords.append(skill)
-            else:
-                missing_keywords.append(skill)
-
-    # Remove duplicates
-    matched_keywords = sorted(set(matched_keywords))
-    missing_keywords = sorted(set(missing_keywords))
-
-    # Calculate percentage
-    total_keywords = len(matched_keywords) + len(missing_keywords)
-
-    if total_keywords > 0:
-        match_percentage = round(
-            (len(matched_keywords) / total_keywords) * 100
-        )
-    else:
-        match_percentage = 0
-
-    # Generate recommendations
     recommendations = []
 
     if missing_keywords:
         recommendations.append(
-            "Consider adding these missing skills to your resume: "
+            "Consider adding these missing skills to your resume "
+            "if you have practical experience: "
             + ", ".join(missing_keywords)
         )
 
@@ -121,25 +92,141 @@ def match_job_description(resume_text: str, job_description: str):
             "Excellent match! Your resume strongly aligns with this job description."
         )
 
-    elif match_percentage >= 70:
+    elif match_percentage >= 75:
         recommendations.append(
-            "Good match. Add the missing skills to improve your job compatibility."
+            "Strong match. Tailor your resume to highlight the missing job-specific skills."
         )
 
-    elif match_percentage >= 50:
+    elif match_percentage >= 60:
         recommendations.append(
-            "Moderate match. Consider tailoring your resume to the job description."
+            "Good potential match. Improve keyword coverage and highlight relevant projects."
+        )
+
+    elif match_percentage >= 40:
+        recommendations.append(
+            "Moderate match. Consider tailoring your skills and projects to this job description."
         )
 
     else:
         recommendations.append(
-            "Low match. Consider improving your skills and tailoring your resume "
-            "to this job description."
+            "Low match. Review the job requirements and strengthen your relevant skills and projects."
         )
 
+    return recommendations
+
+
+def match_job_description(
+    resume_text: str,
+    job_description: str
+):
+    """
+    Compare resume skills against skills mentioned
+    in a job description.
+
+    Returns:
+        matched_keywords
+        missing_keywords
+        keyword_match_percentage
+        job_match_score
+        recommendations
+    """
+
+    # -----------------------------
+    # Validate resume
+    # -----------------------------
+
+    if not resume_text or not resume_text.strip():
+        return {
+            "matched_keywords": [],
+            "missing_keywords": [],
+            "keyword_match_percentage": 0,
+            "job_match_score": 0,
+            "recommendations": [
+                "Resume text is empty."
+            ]
+        }
+
+    # -----------------------------
+    # Validate job description
+    # -----------------------------
+
+    if not job_description or not job_description.strip():
+        return {
+            "matched_keywords": [],
+            "missing_keywords": [],
+            "keyword_match_percentage": 0,
+            "job_match_score": 0,
+            "recommendations": [
+                "Job description is empty."
+            ]
+        }
+
+    matched_keywords = []
+    missing_keywords = []
+
+    # -----------------------------
+    # Check every known skill
+    # -----------------------------
+
+    for skill in SKILLS:
+
+        # Is the skill mentioned in the job description?
+        if skill_exists(skill, job_description):
+
+            # Is the same skill present in the resume?
+            if skill_exists(skill, resume_text):
+                matched_keywords.append(skill)
+            else:
+                missing_keywords.append(skill)
+
+    # -----------------------------
+    # Remove duplicates
+    # -----------------------------
+
+    matched_keywords = sorted(set(matched_keywords))
+    missing_keywords = sorted(set(missing_keywords))
+
+    # -----------------------------
+    # Calculate keyword percentage
+    # -----------------------------
+
+    total_keywords = (
+        len(matched_keywords)
+        + len(missing_keywords)
+    )
+
+    if total_keywords > 0:
+        keyword_match_percentage = round(
+            (len(matched_keywords) / total_keywords) * 100
+        )
+    else:
+        keyword_match_percentage = 0
+
+    # -----------------------------
+    # Calculate overall score
+    # -----------------------------
+
+    job_match_score = calculate_job_match_score(
+        keyword_match_percentage
+    )
+
+    # -----------------------------
+    # Generate recommendations
+    # -----------------------------
+
+    recommendations = generate_recommendations(
+        keyword_match_percentage,
+        missing_keywords
+    )
+
+    # -----------------------------
+    # Final result
+    # -----------------------------
+
     return {
+        "job_match_score": job_match_score,
+        "keyword_match_percentage": keyword_match_percentage,
         "matched_keywords": matched_keywords,
         "missing_keywords": missing_keywords,
-        "keyword_match_percentage": match_percentage,
         "recommendations": recommendations
     }

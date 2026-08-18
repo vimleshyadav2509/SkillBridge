@@ -11,12 +11,22 @@ from resume_parser import (
     extract_experience  
 )
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import PyPDF2
 import io
 
 # Initialize the FastAPI App
 app = FastAPI(title="ResumeIQ API", version="1.0")
+
+# Enable CORS for cross-origin requests from the React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Request Model for the analyze endpoint
 class ResumeData(BaseModel):
@@ -162,4 +172,4 @@ async def match_job(request: JobMatchRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Job matching failed: {str(e)}"
-        )   
+        )
