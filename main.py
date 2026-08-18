@@ -33,23 +33,44 @@ class ResumeData(BaseModel):
     text: str
 
 @app.get("/")
+@app.get("/health")
+@app.get("/api/health")
 def read_root():
-    return {"message": "Welcome to ResumeIQ API"}
+    return {
+        "status": "online",
+        "message": "Welcome to ResumeIQ API",
+        "version": "1.0"
+    }
 
 @app.post("/upload-resume")
 async def upload_resume(file: UploadFile = File(...)):
     """
-    Uploads a PDF resume and extracts the text from it.
-    The 'UploadFile = File(...)' part fixes the Swagger UI parameter error.
+    Uploads a PDF resume and extracts structured ATS data from it.
     """
     
-    # Verify that the uploaded file is a PDF
-    if file.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Only PDF files are allowed!")
+    # Flexible PDF format validation
+    is_pdf_mime = file.content_type in [
+        "application/pdf",
+        "application/x-pdf",
+        "application/acrobat",
+        "applications/vnd.pdf",
+        "text/pdf",
+        "application/octet-stream"
+    ]
+    has_pdf_extension = file.filename and file.filename.lower().endswith(".pdf")
+
+    if not (is_pdf_mime or has_pdf_extension):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file format. Please upload a valid PDF document (.pdf)."
+        )
 
     try:
         # Read the file contents into memory
         contents = await file.read()
+
+        if not contents or len(contents) == 0:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty.")
 
         # Parse the PDF using PyPDF2
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(contents))
@@ -61,8 +82,15 @@ async def upload_resume(file: UploadFile = File(...)):
             if text:
                 extracted_text += text + "\n"
 
-        # after building extracted_text
         extracted_text = extracted_text.strip()
+
+        if not extracted_text:
+            raise HTTPException(
+                status_code=400,
+                detail="Could not extract text from this PDF. Please ensure the PDF contains selectable text (not scanned images)."
+            )
+
+        # Extract structured details
         email = extract_email(extracted_text)
         phone = extract_phone(extracted_text)
         name = extract_name(extracted_text)
@@ -71,30 +99,32 @@ async def upload_resume(file: UploadFile = File(...)):
         projects = extract_projects(extracted_text)
         certifications = extract_certifications(extracted_text)
         experience = extract_experience(extracted_text) 
-        print(certifications)
-
 
         resume_data = {
-        "name": name,
-        "email": email,
-        "phone": phone,
-        "skills": skills,
-        "education": education,
-        "projects": projects,
-        "certifications": certifications,
-        "experience": experience,
-        "extracted_text": extracted_text.strip()
-         }
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "skills": skills,
+            "education": education,
+            "projects": projects,
+            "certifications": certifications,
+            "experience": experience,
+            "extracted_text": extracted_text
+        }
+
         ats = calculate_ats_score(resume_data)
+
         return {
-        "message": "Resume uploaded and parsed successfully!",
-        "filename": file.filename,
-        **resume_data,
-        **ats
+            "message": "Resume uploaded and parsed successfully!",
+            "filename": file.filename,
+            **resume_data,
+            **ats
         }    
+    except HTTPException:
+        raise
     except Exception as e:
-        # Catch any errors during the PDF reading process
-        raise HTTPException(status_code=500, detail=f"Error reading PDF: {str(e)}")
+        # Catch any unexpected errors during PDF parsing
+        raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
 @app.post("/analyze")
 async def analyze_resume(resume: ResumeData):
@@ -102,25 +132,27 @@ async def analyze_resume(resume: ResumeData):
     Takes the extracted text from the resume and generates an ATS score.
     """
     
-    if not resume.text.strip():
+    if not resume.text or not resume.text.strip():
         raise HTTPException(status_code=400, detail="Resume text cannot be empty!")
 
-    text_lower = resume.text.lower()
+    resume_data = {
+        "extracted_text": resume.text,
+        "skills": extract_skills(resume.text),
+        "education": extract_education(resume.text),
+        "projects": extract_projects(resume.text),
+        "certifications": extract_certifications(resume.text),
+        "experience": extract_experience(resume.text),
+        "name": extract_name(resume.text),
+        "email": extract_email(resume.text),
+        "phone": extract_phone(resume.text)
+    }
 
-    # Dummy logic: Increase score if certain keywords are found
-    # You can replace this with your actual AI or ATS logic later
-    score = 50
-    if "python" in text_lower or "fastapi" in text_lower:
-        score += 30
+    ats = calculate_ats_score(resume_data)
 
     return {
         "message": "Analysis completed successfully",
-        "ats_score": score,
-        "suggestions": [
-            "Use strong action verbs (e.g., Developed, Managed).",
-            "Include keywords from the specific job description.",
-            "Ensure the formatting is clean and easy to read."
-        ]
+        **resume_data,
+        **ats
     }
 
 @app.get("/history")
@@ -129,6 +161,7 @@ def get_history():
     Placeholder endpoint for future database integration.
     """
     return {"history": []}
+
 # ==============================
 # JOB MATCH REQUEST MODEL
 # ==============================
@@ -145,13 +178,13 @@ class JobMatchRequest(BaseModel):
 @app.post("/match-job")
 async def match_job(request: JobMatchRequest):
 
-    if not request.resume_text.strip():
+    if not request.resume_text or not request.resume_text.strip():
         raise HTTPException(
             status_code=400,
-            detail="Resume text is required."
+            detail="Resume text is required. Please upload and analyze your resume first."
         )
 
-    if not request.job_description.strip():
+    if not request.job_description or not request.job_description.strip():
         raise HTTPException(
             status_code=400,
             detail="Job description is required."
@@ -172,4 +205,4 @@ async def match_job(request: JobMatchRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Job matching failed: {str(e)}"
-        )
+        )
