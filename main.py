@@ -30,7 +30,7 @@ app.add_middleware(
 
 # Request Model for the analyze endpoint
 class ResumeData(BaseModel):
-    text: str
+    text: str = ""
 
 @app.get("/")
 @app.get("/health")
@@ -43,6 +43,7 @@ def read_root():
     }
 
 @app.post("/upload-resume")
+@app.post("/api/upload-resume")
 async def upload_resume(file: UploadFile = File(...)):
     """
     Uploads a PDF resume and extracts structured ATS data from it.
@@ -127,6 +128,7 @@ async def upload_resume(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
 @app.post("/analyze")
+@app.post("/api/analyze")
 async def analyze_resume(resume: ResumeData):
     """
     Takes the extracted text from the resume and generates an ATS score.
@@ -156,6 +158,7 @@ async def analyze_resume(resume: ResumeData):
     }
 
 @app.get("/history")
+@app.get("/api/history")
 def get_history():
     """
     Placeholder endpoint for future database integration.
@@ -167,8 +170,8 @@ def get_history():
 # ==============================
 
 class JobMatchRequest(BaseModel):
-    resume_text: str
-    job_description: str
+    resume_text: str = ""
+    job_description: str = ""
 
 
 # ==============================
@@ -176,6 +179,7 @@ class JobMatchRequest(BaseModel):
 # ==============================
 
 @app.post("/match-job")
+@app.post("/api/match-job")
 async def match_job(request: JobMatchRequest):
 
     if not request.resume_text or not request.resume_text.strip():
@@ -187,7 +191,7 @@ async def match_job(request: JobMatchRequest):
     if not request.job_description or not request.job_description.strip():
         raise HTTPException(
             status_code=400,
-            detail="Job description is required."
+            detail="Job description is required. Please paste the job requirements."
         )
 
     try:

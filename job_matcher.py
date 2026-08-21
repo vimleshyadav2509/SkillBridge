@@ -42,7 +42,7 @@ def skill_exists(skill: str, text: str) -> bool:
     Prevents incorrect partial matches.
 
     Example:
-    C should NOT match C++
+    C should NOT match C++ or C#
     Java should NOT match JavaScript
     """
 
@@ -52,7 +52,7 @@ def skill_exists(skill: str, text: str) -> bool:
     if not skill_normalized or not text_normalized:
         return False
 
-    pattern = r"(?<!\w)" + re.escape(skill_normalized) + r"(?!\w)"
+    pattern = r"(?<![a-z0-9+#.])" + re.escape(skill_normalized) + r"(?![a-z0-9+#.])"
 
     return re.search(pattern, text_normalized) is not None
 
@@ -168,23 +168,37 @@ def match_job_description(
     # Check every known skill
     # -----------------------------
 
+    skill_mapping = {
+        "HTML": "HTML5",
+        "CSS": "CSS3",
+        "REST APIs": "REST API",
+        "React.js": "React",
+        "Vue.js": "Vue",
+        "Express.js": "Express",
+        "Postgres": "PostgreSQL",
+        "Tailwind": "Tailwind CSS",
+        "Golang": "Go",
+        "K8s": "Kubernetes"
+    }
+
     for skill in SKILLS:
+        canonical_skill = skill_mapping.get(skill, skill)
 
         # Is the skill mentioned in the job description?
-        if skill_exists(skill, job_description):
-
+        if skill_exists(skill, job_description) or skill_exists(canonical_skill, job_description):
             # Is the same skill present in the resume?
-            if skill_exists(skill, resume_text):
-                matched_keywords.append(skill)
+            if skill_exists(skill, resume_text) or skill_exists(canonical_skill, resume_text):
+                matched_keywords.append(canonical_skill)
             else:
-                missing_keywords.append(skill)
+                missing_keywords.append(canonical_skill)
 
     # -----------------------------
-    # Remove duplicates
+    # Remove duplicates & clean missing list
     # -----------------------------
 
     matched_keywords = sorted(set(matched_keywords))
-    missing_keywords = sorted(set(missing_keywords))
+    # Remove any skill from missing if it's already in matched
+    missing_keywords = sorted(set(s for s in missing_keywords if s not in matched_keywords))
 
     # -----------------------------
     # Calculate keyword percentage
