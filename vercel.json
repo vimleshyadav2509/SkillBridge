@@ -1,9 +1,11 @@
 {
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
+  "cleanUrls": false,
+  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!.*\\.).*)",
+      "source": "/((?!google1f1d2913a861df8e\\.html|robots\\.txt|sitemap\\.xml|assets/).*)",
       "destination": "/index.html"
     }
   ]
