@@ -5,7 +5,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!google1f1d2913a861df8e\\.html|robots\\.txt|sitemap\\.xml|assets/).*)",
+      "source": "/((?!google1f1d2913a861df8e\\.html|robots\\.txt|sitemap\\.xml|og-image\\.jpg|assets/).*)",
       "destination": "/index.html"
     }
   ]
