@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = rawApiUrl.replace(/\/+$/, "");
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 // Sample resume data for instant testing
