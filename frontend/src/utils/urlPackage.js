@@ -92,3 +92,4 @@ export function buildShortLinkPayload({ domain = "resumeiq.app", key = "launch",
     description: "Instant PDF parsing, AI keyword extraction & job matching."
   };
 }
+

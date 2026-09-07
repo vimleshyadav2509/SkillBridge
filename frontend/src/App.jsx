@@ -5,8 +5,27 @@ import SkillGapExplorer from "./components/SkillGapExplorer";
 import AssessmentDashboard from "./components/AssessmentDashboard";
 import RoadmapSprint from "./components/RoadmapSprint";
 
-const rawApiUrl = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
-const API_BASE_URL = rawApiUrl.replace(/\/+$/, "");
+// Centralized API Base URL Configuration with safe production fallback
+const getApiBaseUrl = () => {
+  const envUrl = (import.meta.env.VITE_API_BASE_URL || "").trim();
+  // If an external production URL is configured, use it
+  if (envUrl && !envUrl.includes("127.0.0.1") && !envUrl.includes("localhost")) {
+    return envUrl.replace(/\/+$/, "");
+  }
+  // In production browser environments (e.g. Vercel), always use same-origin to prevent mixed content/localhost failures
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+  ) {
+    return window.location.origin;
+  }
+  // Local development fallback
+  return envUrl || "http://127.0.0.1:8000";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 // =====================================================================
@@ -92,25 +111,38 @@ export default function App() {
   const fileInputRef = useRef(null);
 
   // ===================================================================
-  // HEALTH CHECK
+  // HEALTH CHECK (with robust JSON and fallback verification)
   // ===================================================================
   useEffect(() => {
+    let isMounted = true;
     const checkHealth = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/health`, { method: "GET" }).catch(() => null);
-        if (res && res.ok) {
-          setBackendStatus("online");
-        } else {
-          setBackendStatus("offline");
+        let res = await fetch(`${API_BASE_URL}/health`, { method: "GET" }).catch(() => null);
+        if (!res || !res.ok || res.headers.get("content-type")?.includes("text/html")) {
+          res = await fetch(`${API_BASE_URL}/api/health`, { method: "GET" }).catch(() => null);
         }
+        if (res && res.ok) {
+          const contentType = res.headers.get("content-type") || "";
+          if (contentType.includes("application/json")) {
+            const data = await res.json().catch(() => null);
+            if (data && (data.status === "online" || data.service)) {
+              if (isMounted) setBackendStatus("online");
+              return;
+            }
+          }
+        }
+        if (isMounted) setBackendStatus("offline");
       } catch {
-        setBackendStatus("offline");
+        if (isMounted) setBackendStatus("offline");
       }
     };
 
     checkHealth();
     const interval = setInterval(checkHealth, 15000);
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   // ===================================================================
