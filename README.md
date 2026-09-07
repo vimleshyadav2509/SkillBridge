@@ -115,6 +115,34 @@ npm run dev -- --host 127.0.0.1 --port 5173
 ```
 Open `http://127.0.0.1:5173` in your browser.
 
+### 3. Environment Variables
+Both frontend and backend come with `.env.example` templates:
+* **Frontend (`frontend/.env.example`):**
+  ```bash
+  # Local development:
+  VITE_API_BASE_URL=http://127.0.0.1:8000
+  # Production on Vercel:
+  # VITE_API_BASE_URL=https://skillbridge-api.onrender.com
+  ```
+* **Backend (`.env.example`):**
+  ```bash
+  PORT=8000
+  ```
+
+---
+
+## ☁️ Deployment Architecture
+
+SkillBridge is architected for zero-configuration, independent cloud deployment:
+* **Backend (Render / Cloud PaaS):**
+  - Managed via `Procfile`: `web: uvicorn main:app --host 0.0.0.0 --port $PORT`
+  - CORS middleware enabled for cross-origin frontend requests
+  - Automatic `PORT` binding
+* **Frontend (Vercel):**
+  - Managed via `vercel.json` with SPA route rewrites and security headers
+  - Injects `VITE_API_BASE_URL` at build time to communicate with the deployed backend API
+  - Zero hardcoded localhost dependencies in production bundles
+
 ---
 
 ## 🔒 Security & Code Safety Practices

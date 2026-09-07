@@ -8,10 +8,13 @@ __pycache__/
 htmlcov/
 *.log
 
-# Environments
+# Environments & Secrets
 .env
+.env.*
 .env.local
 .env.*.local
+!.env.example
+!frontend/.env.example
 .venv/
 venv/
 env/
@@ -22,6 +25,7 @@ node_modules/
 frontend/node_modules/
 dist/
 frontend/dist/
+build/
 .vite/
 frontend/.vite/
 
@@ -32,3 +36,7 @@ Thumbs.db
 .idea/
 *.swp
 
+# Temporary & Scratch Files
+tmp/
+temp/
+scratch/
