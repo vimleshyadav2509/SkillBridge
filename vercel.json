@@ -3,9 +3,41 @@
   "outputDirectory": "frontend/dist",
   "cleanUrls": false,
   "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/(og-image.jpg|apple-touch-icon.png|favicon.ico|manifest.json)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
-      "source": "/((?!google1f1d2913a861df8e\\.html|robots\\.txt|sitemap\\.xml|og-image\\.jpg|assets/).*)",
+      "source": "/((?!google1f1d2913a861df8e\\.html|robots\\.txt|sitemap\\.xml|og-image\\.jpg|manifest\\.json|apple-touch-icon\\.png|favicon.*|icon-.*|assets/).*)",
       "destination": "/index.html"
     }
   ]
