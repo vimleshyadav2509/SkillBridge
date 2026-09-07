@@ -1,76 +1,57 @@
 {
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
-  "cleanUrls": false,
-  "trailingSlash": false,
-  "headers": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
+      "src": "api/index.py",
+      "use": "@vercel/python"
     },
     {
-      "source": "/(og-image.jpg|apple-touch-icon.png|favicon.ico|manifest.json)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
-        }
-      ]
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
+      "src": "/api/(.*)",
+      "dest": "api/index.py"
     },
     {
-      "source": "/health",
-      "destination": "/api/index.py"
+      "src": "/health",
+      "dest": "api/index.py"
     },
     {
-      "source": "/upload-resume",
-      "destination": "/api/index.py"
+      "src": "/upload-resume",
+      "dest": "api/index.py"
     },
     {
-      "source": "/analyze",
-      "destination": "/api/index.py"
+      "src": "/analyze",
+      "dest": "api/index.py"
     },
     {
-      "source": "/match-job",
-      "destination": "/api/index.py"
+      "src": "/match-job",
+      "dest": "api/index.py"
     },
     {
-      "source": "/history",
-      "destination": "/api/index.py"
+      "src": "/history",
+      "dest": "api/index.py"
     },
     {
-      "source": "/docs",
-      "destination": "/api/index.py"
+      "src": "/docs",
+      "dest": "api/index.py"
     },
     {
-      "source": "/openapi.json",
-      "destination": "/api/index.py"
+      "src": "/openapi.json",
+      "dest": "api/index.py"
     },
     {
-      "source": "/((?!api/|health|upload-resume|analyze|match-job|history|docs|openapi\\.json|google1f1d2913a861df8e\\.html|robots\\.txt|sitemap\\.xml|og-image\\.jpg|manifest\\.json|apple-touch-icon\\.png|favicon.*|icon-.*|assets/).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/index.html"
     }
   ]
 }
