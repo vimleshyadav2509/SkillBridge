@@ -447,22 +447,23 @@ PREFERRED QUALIFICATIONS:
             <div className="hero-compact">
               <div className="hero-text-col">
                 <div className="hero-pill-tag">
-                  <span>⚡ FROM RESUME ➔ SKILL GAP ➔ PROVE SKILL ➔ JOB READY • [CC-GFG-12]</span>
+                  <span className="hero-pill-pulse"></span>
+                  <span>AI-POWERED CAREER INTELLIGENCE • [CC-GFG-12]</span>
                 </div>
 
                 <h1 className="hero-heading">
-                  From Resume to <span className="gradient-text">Job-Ready.</span>
+                  Turn Your Skill Gaps Into <span className="gradient-text">Proof of Competency.</span>
                 </h1>
                 <p className="hero-lead">
-                  Don't just tell students what skills they're missing. Prove what they need to improve through personalized, in-browser coding assessment evaluated live.
+                  SkillBridge analyzes your resume against real job requirements, identifies your highest-impact skill gaps, and gives you a personalized coding assessment to prove what you can do.
                 </p>
 
                 <div className="hero-actions-row">
                   <button className="btn-primary" onClick={() => setNavTab("analyze")}>
-                    Analyze My Employability Gap →
+                    Analyze My Readiness →
                   </button>
                   <button className="btn-secondary" onClick={handleLoadDemo}>
-                    ⚡ Try Interactive Demo
+                    ⚡ Try 1-Click Demo
                   </button>
                 </div>
               </div>
@@ -501,33 +502,87 @@ PREFERRED QUALIFICATIONS:
               </div>
             </div>
 
-            {/* WORKFLOW PROGRESSION STEPPER (Phase 3) */}
-            <div className="workflow-stepper">
-              <div className="step-node active">
-                <span className="step-num">1</span>
-                <span className="step-txt">Resume + JD</span>
-              </div>
-              <div className="step-connector active"></div>
-              <div className={`step-node ${gapAnalysis ? "active" : ""}`}>
-                <span className="step-num">2</span>
-                <span className="step-txt">Gap Intelligence</span>
-              </div>
-              <div className="step-connector active"></div>
-              <div className={`step-node ${activeChallenge ? "active" : ""}`}>
-                <span className="step-num">3</span>
-                <span className="step-txt">Personalized Coding Challenge</span>
-              </div>
-              <div className="step-connector active"></div>
-              <div className={`step-node ${assessmentEvaluation ? "active" : ""}`}>
-                <span className="step-num">4</span>
-                <span className="step-txt">Closed-Loop Score</span>
-              </div>
-              <div className="step-connector active"></div>
-              <div className={`step-node ${roadmap ? "active" : ""}`}>
-                <span className="step-num">5</span>
-                <span className="step-txt">7-Day Sprint</span>
+            {/* REFINED WORKFLOW PIPELINE VISUALIZATION */}
+            <div className="workflow-stepper-container">
+              <div className="workflow-stepper-label">SYSTEM WORKFLOW PIPELINE</div>
+              <div className="workflow-stepper">
+                <div className="step-node active">
+                  <span className="step-num">01</span>
+                  <div className="step-text-wrap">
+                    <span className="step-txt">Resume Profile</span>
+                    <span className="step-sub">PDF / Text</span>
+                  </div>
+                </div>
+                <div className="step-connector active"></div>
+                <div className={`step-node ${gapAnalysis ? "active" : ""}`}>
+                  <span className="step-num">02</span>
+                  <div className="step-text-wrap">
+                    <span className="step-txt">Skill Intelligence</span>
+                    <span className="step-sub">5-Factor Model</span>
+                  </div>
+                </div>
+                <div className="step-connector active"></div>
+                <div className={`step-node ${gapAnalysis ? "active" : ""}`}>
+                  <span className="step-num">03</span>
+                  <div className="step-text-wrap">
+                    <span className="step-txt">Critical Gap</span>
+                    <span className="step-sub">Ranked Priority</span>
+                  </div>
+                </div>
+                <div className="step-connector active"></div>
+                <div className={`step-node ${activeChallenge ? "active" : ""}`}>
+                  <span className="step-num">04</span>
+                  <div className="step-text-wrap">
+                    <span className="step-txt">Prove Competency</span>
+                    <span className="step-sub">Pyodide Sandbox</span>
+                  </div>
+                </div>
+                <div className="step-connector active"></div>
+                <div className={`step-node ${assessmentEvaluation ? "active" : ""}`}>
+                  <span className="step-num">05</span>
+                  <div className="step-text-wrap">
+                    <span className="step-txt">Job-Ready</span>
+                    <span className="step-sub">Closed-Loop & Roadmap</span>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* CLOSED-LOOP ACHIEVEMENT BANNER (IF ASSESSMENT COMPLETED) */}
+            {assessmentEvaluation && (
+              <div className="closed-loop-dashboard-banner">
+                <div className="cldb-left">
+                  <span className="cldb-badge">✓ DEMONSTRATED COMPETENCY</span>
+                  <h3>
+                    Verified Ability: <span className="highlight-emerald">{assessmentEvaluation.progress?.skill_tested}</span>
+                  </h3>
+                  <p>
+                    Practical competency proved through in-browser code execution. Job readiness score recalculated.
+                  </p>
+                </div>
+                <div className="cldb-center">
+                  <div className="cldb-score-box">
+                    <div className="cldb-score-item">
+                      <span className="cldb-score-lbl">BEFORE</span>
+                      <span className="cldb-score-val">{assessmentEvaluation.progress?.previous_readiness}%</span>
+                    </div>
+                    <div className="cldb-score-arrow">➔</div>
+                    <div className="cldb-score-item">
+                      <span className="cldb-score-lbl">AFTER</span>
+                      <span className="cldb-score-val highlight-emerald">{assessmentEvaluation.progress?.updated_readiness}%</span>
+                    </div>
+                  </div>
+                  <div className="cldb-gain-pill">
+                    ▲ +{assessmentEvaluation.progress?.score_delta}% Verified Readiness
+                  </div>
+                </div>
+                <div className="cldb-right">
+                  <button className="btn-primary" onClick={() => setNavTab("roadmap")}>
+                    Continue to 7-Day Roadmap →
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* DASHBOARD AUDIT CARDS IF ANALYSIS COMPLETED */}
             {gapAnalysis ? (
@@ -535,8 +590,11 @@ PREFERRED QUALIFICATIONS:
                 {/* 5-FACTOR EXPLAINABLE READINESS BREAKDOWN */}
                 <div className="audit-card factor-breakdown-card">
                   <div className="card-head">
-                    <h4>Explainable Readiness Model</h4>
-                    <span className="weight-total">100% Total Weight</span>
+                    <div>
+                      <span className="card-pretitle">5-FACTOR EVALUATION</span>
+                      <h4>Explainable Readiness Model</h4>
+                    </div>
+                    <span className="weight-total">100% Weight</span>
                   </div>
 
                   <div className="factors-list">
@@ -566,8 +624,12 @@ PREFERRED QUALIFICATIONS:
 
                 {/* CRITICAL GAP HIGHLIGHT & ASSESSMENT LAUNCH */}
                 <div className="audit-card assessment-cta-card">
-                  <span className="section-badge badge-rose">HIGHEST PRIORITY GAP DETECTED</span>
+                  <span className="section-badge badge-rose">YOUR HIGHEST-IMPACT GAP</span>
                   <h3 className="cta-skill-title">{topCriticalGap}</h3>
+                  <div className="gap-impact-strip">
+                    <span className="impact-pill-high">HIGH IMPACT</span>
+                    <span className="impact-meta-txt">Required Core Competency</span>
+                  </div>
                   <p className="cta-skill-desc">
                     {gapAnalysis.prioritized_gaps?.[0]?.reason ||
                       "Listed as an essential requirement in target JD. Proving proficiency here immediately upgrades your interview readiness."}
@@ -593,7 +655,8 @@ PREFERRED QUALIFICATIONS:
                 <div className="audit-card col-span-2">
                   <div className="split-grid-2">
                     <div>
-                      <h4 className="subhead-green">✓ Strong Matched Areas ({gapAnalysis.matched_skills?.length})</h4>
+                      <h4 className="subhead-green">✓ Matched Skills ({gapAnalysis.matched_skills?.length})</h4>
+                      <p className="section-micro-desc">Verified competencies present in your candidate profile</p>
                       <div className="tag-cloud">
                         {gapAnalysis.matched_skills?.map((s, i) => (
                           <span className="tag-pill tag-green" key={i}>
@@ -603,7 +666,8 @@ PREFERRED QUALIFICATIONS:
                       </div>
                     </div>
                     <div>
-                      <h4 className="subhead-rose">✕ Critical & Potential Gaps ({gapAnalysis.missing_skills?.length})</h4>
+                      <h4 className="subhead-rose">✕ Missing & Target Gaps ({gapAnalysis.missing_skills?.length})</h4>
+                      <p className="section-micro-desc">Competencies requested in target role requiring practice</p>
                       <div className="tag-cloud">
                         {gapAnalysis.missing_skills?.map((s, i) => (
                           <span className="tag-pill tag-rose" key={i}>
@@ -619,14 +683,15 @@ PREFERRED QUALIFICATIONS:
               /* EMPTY STATE CALLOUT */
               <div className="dashboard-cta-banner">
                 <div className="cta-banner-content">
+                  <div className="cta-banner-badge">STARTUP READY WORKSPACE</div>
                   <h3>Ready to analyze your employability gap?</h3>
-                  <p>Upload your resume and paste the target job description to get started, or test the demo immediately.</p>
+                  <p>Upload your resume and paste the target job description to get started, or test the verified demo immediately.</p>
                   <div className="banner-buttons">
                     <button className="btn-primary" onClick={() => setNavTab("analyze")}>
-                      Upload Resume & Job Description →
+                      Analyze My Readiness →
                     </button>
                     <button className="btn-secondary" onClick={handleLoadDemo}>
-                      ⚡ Load 1-Click Demo Scenario
+                      ⚡ Try 1-Click Demo
                     </button>
                   </div>
                 </div>
@@ -648,6 +713,24 @@ PREFERRED QUALIFICATIONS:
               </p>
             </div>
 
+            {/* PROGRESS STEP STRIP */}
+            <div className="input-progress-steps">
+              <div className={`input-step-item ${resumeText ? "filled" : "active"}`}>
+                <span className="step-badge">STEP 01</span>
+                <span className="step-title">Candidate Profile</span>
+              </div>
+              <div className="input-step-arrow">➔</div>
+              <div className={`input-step-item ${jobDescription ? "filled" : resumeText ? "active" : ""}`}>
+                <span className="step-badge">STEP 02</span>
+                <span className="step-title">Target Role</span>
+              </div>
+              <div className="input-step-arrow">➔</div>
+              <div className={`input-step-item ${resumeText && jobDescription ? "active" : ""}`}>
+                <span className="step-badge">STEP 03</span>
+                <span className="step-title">Analyze Readiness</span>
+              </div>
+            </div>
+
             <div className="demo-notice-strip">
               <span>Judges can click to test the full pipeline in 1 click:</span>
               <button className="btn-demo-pill" onClick={handleLoadDemo}>
@@ -665,8 +748,11 @@ PREFERRED QUALIFICATIONS:
               {/* RESUME INPUT COLUMN */}
               <div className="input-card">
                 <div className="input-card-header">
-                  <span className="card-num">STEP 1</span>
-                  <h3>Candidate Resume</h3>
+                  <div className="card-num-badge">STEP 01</div>
+                  <div>
+                    <h3>Candidate Profile</h3>
+                    <p className="card-sub-hint">Upload PDF or paste extracted resume text</p>
+                  </div>
                 </div>
 
                 {/* DROPZONE */}
@@ -729,12 +815,15 @@ PREFERRED QUALIFICATIONS:
               {/* JOB DESCRIPTION INPUT COLUMN */}
               <div className="input-card">
                 <div className="input-card-header">
-                  <span className="card-num">STEP 2</span>
-                  <h3>Target Job Description</h3>
+                  <div className="card-num-badge">STEP 02</div>
+                  <div>
+                    <h3>Target Role</h3>
+                    <p className="card-sub-hint">Define role expectations & required skills</p>
+                  </div>
                 </div>
 
                 <div className="job-role-field">
-                  <label className="field-lbl">Target Role Title (Optional)</label>
+                  <label className="field-lbl">Target Role Title</label>
                   <input
                     type="text"
                     className="role-input"
@@ -755,12 +844,22 @@ PREFERRED QUALIFICATIONS:
             </div>
 
             <div className="analyze-action-bar">
+              <div className="action-step-header">
+                <span className="card-num-badge">STEP 03</span>
+                <span className="action-step-txt">Ready to compute your 5-factor explainable score and critical gaps</span>
+              </div>
               <button
-                className="btn-primary btn-large btn-full"
+                className="btn-primary btn-large btn-full btn-cta-glow"
                 onClick={handleRunGapAnalysis}
                 disabled={isAnalyzing}
               >
-                {isAnalyzing ? "Processing Employability Gaps..." : "Analyze My Employability Gap →"}
+                {isAnalyzing ? (
+                  <>
+                    <span className="spinner-small"></span> Processing Employability Gaps...
+                  </>
+                ) : (
+                  "Analyze My Readiness →"
+                )}
               </button>
             </div>
           </div>

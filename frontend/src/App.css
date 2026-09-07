@@ -430,25 +430,39 @@ body {
 }
 
 /* ==========================================================================
-   WORKFLOW STEPPER (Phase 3)
+   WORKFLOW STEPPER & PIPELINE VISUALIZATION
    ========================================================================== */
+.workflow-stepper-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.workflow-stepper-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
 .workflow-stepper {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 16px 24px;
-  margin-bottom: 32px;
+  gap: 8px;
 }
 
 .step-node {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   opacity: 0.45;
-  transition: opacity 0.3s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .step-node.active {
@@ -456,39 +470,216 @@ body {
 }
 
 .step-num {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: all 0.25s;
 }
 
 .step-node.active .step-num {
-  background: var(--accent-primary);
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: #fff;
-  border-color: var(--accent-primary);
+  border-color: #818cf8;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.4);
+}
+
+.step-text-wrap {
+  display: flex;
+  flex-direction: column;
 }
 
 .step-txt {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.step-sub {
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .step-connector {
   flex: 1;
   height: 2px;
   background: var(--border-subtle);
-  margin: 0 12px;
+  margin: 0 6px;
+  min-width: 16px;
+  transition: background 0.3s;
 }
 
 .step-connector.active {
-  background: var(--accent-primary);
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+}
+
+/* ==========================================================================
+   CLOSED-LOOP DASHBOARD BANNER
+   ========================================================================== */
+.closed-loop-dashboard-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(17, 24, 39, 0.95) 60%);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.12);
+}
+
+.cldb-left {
+  flex: 1.2;
+}
+
+.cldb-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.cldb-left h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.cldb-left p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.cldb-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.cldb-score-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cldb-score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cldb-score-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.cldb-score-val {
+  font-size: 26px;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: #fff;
+}
+
+.cldb-score-arrow {
+  font-size: 18px;
+  color: #34d399;
+}
+
+.cldb-gain-pill {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.cldb-right {
+  display: flex;
+  align-items: center;
+}
+
+.hero-pill-pulse {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.gap-impact-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.impact-pill-high {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.impact-meta-txt {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.card-pretitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  display: block;
+}
+
+.section-micro-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.cta-banner-badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
 /* ==========================================================================
@@ -835,8 +1026,121 @@ body {
   font-size: 13.5px;
 }
 
+/* ==========================================================================
+   INPUT STUDIO PROGRESS STEPS & CARDS
+   ========================================================================== */
+.input-progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px 24px;
+  margin-bottom: 24px;
+}
+
+.input-step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.45;
+  transition: all 0.25s;
+}
+
+.input-step-item.active {
+  opacity: 1;
+}
+
+.input-step-item.filled {
+  opacity: 0.85;
+}
+
+.input-step-item .step-badge {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.input-step-item.active .step-badge {
+  background: var(--accent-primary);
+  border-color: #818cf8;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+.input-step-item.filled .step-badge {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.input-step-item .step-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.input-step-arrow {
+  color: var(--border-subtle);
+  font-size: 14px;
+}
+
+.card-num-badge {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 4px 9px;
+  border-radius: 6px;
+}
+
+.card-sub-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.action-step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.action-step-txt {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.btn-cta-glow {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.45);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.btn-cta-glow:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+  box-shadow: 0 10px 28px -2px rgba(99, 102, 241, 0.6);
+  transform: translateY(-2px);
+}
+
 .analyze-action-bar {
-  margin-top: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  margin-top: 8px;
 }
 
 /* ==========================================================================

@@ -31,14 +31,14 @@ export default function AssessmentDashboard({ evaluation, onNavigateToRoadmap, o
       {/* HEADER BANNER */}
       <div className="eval-hero-banner">
         <div className="banner-badge-group">
-          <span className="section-badge badge-emerald">ASSESSMENT COMPLETE</span>
-          <span className="eval-status-pill">{progress.performance_status || "Evaluation Passed"}</span>
+          <span className="section-badge badge-emerald">✓ DEMONSTRATED COMPETENCY</span>
+          <span className="eval-status-pill">{progress.performance_status || "Competency Verified"}</span>
         </div>
         <h2 className="eval-hero-title">
-          Skill Verification: <span className="gradient-text-emerald">{skillTested}</span>
+          Practical Ability Verified: <span className="gradient-text-emerald">{skillTested}</span>
         </h2>
         <p className="eval-hero-desc">
-          You executed real code against rigorous test cases inside the Pyodide WebAssembly sandbox. Here is your verified employability progress update.
+          The candidate has successfully demonstrated practical ability in <strong>{skillTested}</strong>. In-browser Pyodide sandbox tests passed and your readiness score has been updated.
         </p>
       </div>
 
