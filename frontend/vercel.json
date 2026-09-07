@@ -39,15 +39,23 @@
       "destination": "/api/health"
     },
     {
-      "source": "/api/health",
-      "destination": "/api/health"
+      "source": "/upload-resume",
+      "destination": "/api/upload-resume"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index"
+      "source": "/analyze",
+      "destination": "/api/analyze-gap"
     },
     {
-      "source": "/((?!api|health|upload-resume|analyze|match-job|history|docs|openapi|assets|favicon|icon|manifest|robots|sitemap).*)",
+      "source": "/api/analyze",
+      "destination": "/api/analyze-gap"
+    },
+    {
+      "source": "/api/generate-challenge",
+      "destination": "/api/analyze-gap"
+    },
+    {
+      "source": "/((?!api/|health|upload-resume|analyze|match-job|history|docs|openapi|assets/|favicon|icon|manifest|robots|sitemap).*)",
       "destination": "/index.html"
     }
   ]
